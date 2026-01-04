@@ -13,11 +13,14 @@
     color: white; 
     padding: 10px; 
     text-align: center; 
-    /* Lệnh sửa lỗi sticky nằm ở đây */
+    
+    /* Sửa lỗi cho iPhone/Safari ở đây */
+    position: -webkit-sticky; /* Bắt buộc cho Safari cũ và iOS */
     position: sticky; 
     top: 0; 
-    z-index: 1000; 
+    z-index: 9999; /* Đảm bảo con số này cực lớn để không bị video đè lên */
 }
+
 
         nav a { color: white; margin: 0 15px; text-decoration: none; font-weight: bold; }
         
@@ -273,5 +276,6 @@
 
 </body>
 </html>
+
 
 
