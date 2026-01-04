@@ -8,7 +8,17 @@
         /* Một chút CSS "học hỏi" từ báo dân trí */
         body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; background: #f4f4f4; }
         header { background: #b10000; color: white; padding: 20px; text-align: center; }
-        nav { background: #333; color: white; padding: 10px; text-align: center; sticky: top; }
+        nav { 
+    background: #333; 
+    color: white; 
+    padding: 10px; 
+    text-align: center; 
+    /* Lệnh sửa lỗi sticky nằm ở đây */
+    position: sticky; 
+    top: 0; 
+    z-index: 1000; 
+}
+
         nav a { color: white; margin: 0 15px; text-decoration: none; font-weight: bold; }
         
         .container { display: flex; max-width: 1200px; margin: 20px auto; gap: 20px; padding: 0 10px; }
@@ -263,4 +273,5 @@
 
 </body>
 </html>
+
 
