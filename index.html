@@ -8,20 +8,7 @@
         /* Một chút CSS "học hỏi" từ báo dân trí */
         body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; background: #f4f4f4; }
         header { background: #b10000; color: white; padding: 20px; text-align: center; }
-        nav { 
-    background: #333; 
-    color: white; 
-    padding: 10px; 
-    text-align: center; 
-    
-    /* Sửa lỗi cho iPhone/Safari ở đây */
-    position: -webkit-sticky; /* Bắt buộc cho Safari cũ và iOS */
-    position: sticky; 
-    top: 0; 
-    z-index: 9999; /* Đảm bảo con số này cực lớn để không bị video đè lên */
-}
-
-
+        nav { background: #333; color: white; padding: 10px; text-align: center; sticky: top; }
         nav a { color: white; margin: 0 15px; text-decoration: none; font-weight: bold; }
         
         .container { display: flex; max-width: 1200px; margin: 20px auto; gap: 20px; padding: 0 10px; }
@@ -39,7 +26,32 @@
         footer { text-align: center; padding: 20px; background: #333; color: white; margin-top: 20px; }
 
         html {scroll-behavior: smooth;}
+       
+       .stars {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+.stars input { display: none; }
+.stars label {
+  font-size: 30px;
+  color: #ccc;
+  cursor: pointer;
+}
+.stars input:checked ~ label,
+.stars label:hover,
+.stars label:hover ~ label {
+  color: #f5b301;
+}
+.comment-box textarea {
+  width: 100%;
+  height: 80px;
+  margin-top: 10px;
+}
+  
+       
     </style>
+
 </head>
 <body>
 
@@ -252,10 +264,10 @@
 
     <hr>
 
-    <h3>DI TÍCH</h3>
+    <h3>DI TÍCH LIÊN QUAN</h3>
     <p>Đền thờ Trạng Trình tại Vĩnh Bảo (Hải Phòng) là một trong những điểm đến văn hóa lớn nhất miền Bắc.</p>
 
-      <h3 style="border-bottom: 2px solid #b10000; padding-bottom: 10px; color: #b10000;">NĂM 2025 KỶ NIỆM NĂM MẤT/NĂM SINH</h3>
+      <h3 style="border-bottom: 2px solid #b10000; padding-bottom: 10px; color: #b10000;">NĂM 2025 KỶ NIỆM X NĂM MẤT/SINH</h3>
     <p style="text-align: justify; font-size: 0.95em;">
         Năm 2025 đánh dấu kỷ niệm 434 năm mất của cụ Nguyễn Bỉnh Khiêm (1585–2025). 
         Đây là dịp để nhìn lại đóng góp của cụ cho giáo dục và văn hóa Việt Nam, và phổ biến các giá trị triết học, giáo dục mà cụ truyền lại.
@@ -273,6 +285,132 @@
 <footer>
     <p>Tổ 2 Legit 100%</p>
 </footer>
+
+
+<div class="rating-system">
+  <h3>Đàm đạo và đánh giá:</h3>
+  <div class="stars">
+    <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+    <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+    <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+    <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+    <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+  </div>
+
+  <div class="comment-box">
+    <textarea id="userComment" placeholder="Tôi đánh giá romcom của bạn..."></textarea>
+    <button onclick="submitComment()">Gửi đánh giá</button>
+  </div>
+</div>
+
+<div id="displayComments">
+  </div>
+
+
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+    
+    const firebaseConfig = {
+    apiKey: "AIzaSyAsp5QpHHblWBsTGh9DrwV-jA6az02-LR8",
+    authDomain: "idiots-project.firebaseapp.com",
+    // DÁN ĐỊA CHỈ MỚI VÀO ĐÂY:
+    databaseURL: "https://idiots-project-default-rtdb.asia-southeast1.firebasedatabase.app", 
+    projectId: "idiots-project",
+    storageBucket: "idiots-project.firebasestorage.app",
+    messagingSenderId: "733813489606",
+    appId: "1:733813489606:web:c71c134b7d2e64dc973cc7",
+    measurementId: "G-4CFBT0EK29"
+};
+
+    // Khởi tạo 
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const database = firebase.database();
+
+    // Hàm gửi bình luận
+    function submitComment() {
+        const commentBox = document.getElementById('userComment');
+        const comment = commentBox.value;
+        const ratingEle = document.querySelector('input[name="rating"]:checked');
+        const rating = ratingEle ? ratingEle.value : null;
+
+        if(!comment || !rating) {
+            alert("Vui lòng nhập đủ sao và nội dung!");
+            return;
+        }
+
+        database.ref('comments').push().set({
+            rating: rating,
+            comment: comment,
+            timestamp: Date.now()
+        }).then(() => {
+            commentBox.value = ""; 
+            alert("Đã gửi thành công!");
+        }).catch((error) => {
+            console.error("Lỗi gửi dữ liệu:", error);
+            alert("Lỗi: " + error.message);
+        });
+    }
+
+    // Hàm hiển thị bình luận
+    const commentDisplay = document.getElementById('displayComments');
+    if (commentDisplay) {
+        database.ref('comments').on('value', (snapshot) => {
+    const data = snapshot.val();
+    const display = document.getElementById('displayComments');
+    display.innerHTML = ""; 
+
+    for (let id in data) {
+        const item = data[id];
+        
+        // Xử lý danh sách phản hồi (nếu có)
+        let repliesHTML = "";
+        if (item.replies) {
+            for (let rId in item.replies) {
+                repliesHTML += `
+                    <div style="margin-left: 30px; margin-top: 5px; padding: 5px; border-left: 2px solid #ddd; font-size: 0.9em;">
+                        <p style="margin: 0;"><strong>Phản hồi:</strong> ${item.replies[rId].text}</p>
+                        <small style="color: #888;">${new Date(item.replies[rId].timestamp).toLocaleString()}</small>
+                    </div>`;
+            }
+        }
+
+        // Hiển thị bình luận chính và nút Phản hồi
+        display.innerHTML += `
+            <div style="border-bottom: 1px solid #eee; padding: 15px 0;">
+                <p><strong>Đánh giá: ${item.rating} ⭐</strong></p>
+                <p style="margin: 5px 0;">${item.comment}</p>
+                <button onclick="replyComment('${id}')" style="font-size: 12px; cursor: pointer; padding: 2px 8px;">Trả lời</button>
+                
+                <div class="all-replies">${repliesHTML}</div>
+            </div>
+        `;
+    }
+});
+    }
+
+    function replyComment(parentId) {
+    const replyText = prompt("bình luận:");
+    
+    // Nếu người dùng không nhập gì hoặc nhấn Hủy thì thoát
+    if (!replyText || replyText.trim() === "") return;
+
+    // Lưu vào nhánh 'replies' nằm bên trong bình luận có ID là parentId
+    database.ref('comments/' + parentId + '/replies').push({
+        text: replyText,
+        timestamp: Date.now()
+    }).then(() => {
+        alert("Đã gửi phản hồi!");
+    }).catch((error) => {
+        console.error("Lỗi phản hồi:", error);
+    });
+}
+</script>
+
 
 </body>
 </html>
